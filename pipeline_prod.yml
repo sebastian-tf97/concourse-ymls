@@ -1,0 +1,54 @@
+resources:
+  - name: git-resource
+    type: git
+    source:
+      uri: https://github.com/sebastian-tf97/concourse-ymls.git
+  
+  - name: test-repo
+    type: git
+    source:
+      uri: ((test-repo-uri))
+      branch: ((branch))
+      private_key: ((private-key))
+        
+jobs:
+  - name: job-git-put
+    plan:
+      - get: git-resource
+      - get: test-repo
+      - task: git-put-commit
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: alpine/git
+          inputs:
+            - name: git-resource
+            - name: test-repo
+          outputs:
+            - name: test-repo
+          run:
+            path: git-resource/scripts/git-commit.sh
+      - put: test-repo
+        params:
+          repository: test-repo
+
+  - name: job-fetch-date
+    plan:
+      - get: git-resource
+      - get: test-repo
+        passed: [job-git-put]
+        trigger: true
+      - task: fetch-date
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: busybox
+          inputs:
+            - name: test-repo
+          run:
+            path: cat
+            args: [test-repo/date.txt]
