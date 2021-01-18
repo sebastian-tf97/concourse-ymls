@@ -7,9 +7,9 @@ resources:
   - name: test-repo
     type: git
     source:
-      uri: 
-      branch: 
-      private_key: 
+      uri: ((test-repo-uri))
+      branch: ((branch))
+      private_key: ((private-key))
         
 jobs:
   - name: job-git-put
