@@ -1,0 +1,19 @@
+resources:
+  - name: git-resource
+    type: git
+    source: {uri: https://github.com/sebastian-tf97/concourse-ymls.git}
+
+  - name: timer
+    type: time
+    source:
+      interval: 1m
+
+jobs:
+  - name: job-timed-hello-world
+    public: true
+    plan:
+      - get: git-resource
+      - get: timer
+        trigger: true
+      - task: print-hello-world
+        file: git-resource/hello_world.yml
