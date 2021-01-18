@@ -1,0 +1,36 @@
+resources:
+  - name: git-resource
+    type: git
+    source: {uri: https://github.com/sebastian-tf97/concourse-ymls.git}
+
+jobs:
+  - name: job-pass-output
+    public: true
+    plan:
+      - get: git-resource
+      - task: create-some-files
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: busybox
+          inputs:
+          - name: git-resource
+          run:
+            path: git-resource/scripts/create-some-files.sh
+          outputs:
+            - name: some-files
+      
+      - task: show-some-files
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: busybox
+          inputs:
+            - name: git-resource
+            - name: some-files
+          run:
+            path: git-resource/scripts/show-some-files.sh
