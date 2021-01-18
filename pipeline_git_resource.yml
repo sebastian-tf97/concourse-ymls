@@ -1,0 +1,12 @@
+resources:
+  - name: git-resource
+    type: git
+    source: {uri: https://github.com/sebastian-tf97/concourse-ymls.git}
+
+jobs:
+  - name: job-hello-world-from-git
+    public: true
+    plan:
+      - get: git-resource
+      - task: print-hello-world
+        file: git-resource/hello_world.yml
